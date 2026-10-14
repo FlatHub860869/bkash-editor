@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bKash Mobile Screenshot Generator</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- html2canvas library for high-resolution PNG export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+  <div class="app-layout">
+    
+    <!-- LEFT PANEL: CONTROLS -->
+    <aside class="control-panel">
+      <div class="panel-header">
+        <div class="brand-pill">bKash Template Editor</div>
+        <h1>Screenshot Generator</h1>
+        <p>Edit dynamic layers over the authentic screenshot template.</p>
+      </div>
+
+      <!-- Screenshot Background Selector -->
+      <section class="control-group">
+        <label class="section-title">1. Base Screenshot Image</label>
+        <div class="file-upload-box">
+          <input type="file" id="bg-upload" accept="image/*">
+          <label for="bg-upload" class="upload-btn-secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Change Screenshot File</span>
+          </label>
+          <span class="file-hint">Or paste an image with <b>Ctrl + V</b></span>
+        </div>
+      </section>
+
+      <!-- Profile Photo Control -->
+      <section class="control-group">
+        <label class="section-title">2. Profile Photo</label>
+        <div class="profile-input-row">
+          <img id="avatar-preview-thumb" src="" alt="Avatar Thumb" class="thumb-preview">
+          <div class="file-upload-box flex-1">
+            <input type="file" id="profile-upload" accept="image/*">
+            <label for="profile-upload" class="upload-btn-secondary">
+              <span>Upload New Photo</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Username Control -->
+      <section class="control-group">
+        <label class="section-title" for="input-username">3. Account Name</label>
+        <input type="text" id="input-username" class="text-input" value="Atikur Rahman" placeholder="Enter username">
+      </section>
+
+      <!-- Balance Control -->
+      <section class="control-group">
+        <label class="section-title" for="input-balance">4. Balance Amount (৳)</label>
+        <div class="currency-input-wrapper">
+          <span class="currency-prefix">৳</span>
+          <input type="text" id="input-balance" class="text-input currency-input" value="756.08" placeholder="0.00">
+        </div>
+      </section>
+
+      <!-- Time Settings -->
+      <section class="control-group">
+        <div class="flex-between">
+          <label class="section-title">5. Status Bar Time</label>
+          <label class="switch-label">
+            <input type="checkbox" id="auto-time-toggle" checked>
+            <span>Auto System Time</span>
+          </label>
+        </div>
+        <input type="text" id="input-custom-time" class="text-input" value="5:15" placeholder="e.g. 5:15" disabled>
+      </section>
+
+      <!-- Fine-Tune Coordinate Accordion -->
+      <details class="accordion">
+        <summary>Fine-Tune Coordinates (X / Y Offset)</summary>
+        <div class="accordion-content">
+          <div class="coord-grid">
+            <div class="coord-item">
+              <span>Time X / Y:</span>
+              <input type="number" id="tune-time-x" step="0.1">
+              <input type="number" id="tune-time-y" step="0.1">
+            </div>
+            <div class="coord-item">
+              <span>Profile X / Y:</span>
+              <input type="number" id="tune-profile-x" step="0.1">
+              <input type="number" id="tune-profile-y" step="0.1">
+            </div>
+            <div class="coord-item">
+              <span>Name X / Y:</span>
+              <input type="number" id="tune-name-x" step="0.1">
+              <input type="number" id="tune-name-y" step="0.1">
+            </div>
+            <div class="coord-item">
+              <span>Balance X / Y:</span>
+              <input type="number" id="tune-balance-x" step="0.1">
+              <input type="number" id="tune-balance-y" step="0.1">
+            </div>
+          </div>
+          <button type="button" id="btn-reset-coords" class="btn-subtle">Reset to Default Coordinates</button>
+        </div>
+      </details>
+
+      <!-- Download Action -->
+      <div class="action-footer">
+        <button id="btn-download" class="btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Download Screenshot (.PNG)</span>
+        </button>
+        <p class="export-note">Preserves crisp 100% original phone resolution</p>
+      </div>
+    </aside>
+
+    <!-- RIGHT PANEL: PHONE PREVIEW -->
+    <main class="preview-stage">
+      <div class="phone-chassis">
+        <!-- THE CAPTURE TARGET -->
+        <div id="phone-screen" class="phone-screen">
+          
+          <!-- Layer 0: Original Screenshot Image (Fixed Background) -->
+          <img id="screenshot-bg" class="screenshot-bg" src="screenshot.jpg" alt="Original bKash UI Screenshot">
+
+          <!-- Layer 1: Status Bar Time Overlay -->
+          <div id="layer-time" class="overlay-layer layer-time">
+            <span id="display-time">5:15</span>
+          </div>
+
+          <!-- Layer 2: Profile Photo Overlay -->
+          <div id="layer-profile" class="overlay-layer layer-profile">
+            <img id="display-avatar" src="" alt="Profile">
+          </div>
+
+          <!-- Layer 3: Username Overlay -->
+          <div id="layer-username" class="overlay-layer layer-username">
+            <span id="display-username">Atikur Rahman</span>
+          </div>
+
+          <!-- Layer 4: Balance Amount Overlay -->
+          <div id="layer-balance" class="overlay-layer layer-balance">
+            <span class="bengali-taka">৳</span>
+            <span id="display-balance">756.08</span>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
